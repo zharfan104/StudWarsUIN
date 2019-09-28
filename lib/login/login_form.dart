@@ -85,8 +85,7 @@ class _LoginFormState extends State<LoginForm> {
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Image.network('https://i.ibb.co/56qs2m1/stud2.png',
-                          height: 200),
+                      child: Image.asset('assets/stud_logo.png', height: 200),
                     ),
                     TextFormField(
                       controller: _emailController,

@@ -131,7 +131,7 @@ class KaruIdentitas extends StatelessWidget {
                     Text('Lost : ${user.kalah}'),
                   ],
                 ),
-                Text('Level : 1'),
+                Text('Level : ${user.level}'),
               ],
             ),
           )

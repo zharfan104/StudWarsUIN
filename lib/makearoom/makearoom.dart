@@ -1,7 +1,9 @@
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_firebase_login/chat_room/chat_room.dart';
 import 'package:flutter_firebase_login/chat_room/chatroomscreen.dart';
+import 'package:flutter_firebase_login/dropdownsoal.dart';
 import 'package:flutter_firebase_login/makearoom/bloc/makearoom_bloc.dart';
 import 'package:flutter_firebase_login/makearoom/bloc/makearoom_state.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
@@ -11,9 +13,12 @@ import 'bloc/bloc.dart';
 
 class MakeARoom extends StatefulWidget {
   UserRepository _userRepository;
-  MakeARoom({Key key, @required UserRepository userRepository})
+  String _tipe;
+  MakeARoom(
+      {Key key, @required UserRepository userRepository, @required String tipe})
       : assert(userRepository != null),
         _userRepository = userRepository,
+        _tipe = tipe,
         super(key: key);
   @override
   _MakeARoomState createState() => _MakeARoomState();
@@ -23,11 +28,26 @@ class _MakeARoomState extends State<MakeARoom> {
   MakeARoomBloc _makeARoomBloc;
 
   UserRepository get _userRepository => widget._userRepository;
+  String get _tipe => widget._tipe;
+  final myController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _makeARoomBloc = BlocProvider.of<MakeARoomBloc>(context);
+    myController.addListener(_printLatestValue);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    myController.dispose();
+
+    _makeARoomBloc.dispose();
+  }
+
+  _printLatestValue() {
+    print("Second text field: ${myController.text}");
   }
 
   static const mapelGrade = <String>[
@@ -36,7 +56,6 @@ class _MakeARoomState extends State<MakeARoom> {
     'Kimia',
     'Biologi'
   ];
-  bool _private = false;
   String _mapel = "Matematika";
 
   static const jenisUjian = <String>['SIMAK UI', 'SBMPTN', 'UM'];
@@ -50,22 +69,12 @@ class _MakeARoomState extends State<MakeARoom> {
   ];
   String _bab = "Aljabar";
 
-  final List<DropdownMenuItem<String>> _dropDownMenuMapel = mapelGrade
-      .map((String value) => DropdownMenuItem<String>(
-          value: value,
-          child: Text(value, style: TextStyle(color: Colors.black))))
-      .toList();
-
   final List<DropdownMenuItem<String>> _dropDownMenuUjian = jenisUjian
       .map((String value) => DropdownMenuItem<String>(
           value: value,
-          child: Text(value, style: TextStyle(color: Colors.black))))
-      .toList();
-
-  final List<DropdownMenuItem<String>> _dropDownMenuSubmapel = subMapel
-      .map((String value) => DropdownMenuItem<String>(
-          value: value,
-          child: Text(value, style: TextStyle(color: Colors.black))))
+          child: Text(value,
+              style: TextStyle(
+                  color: Colors.black, fontFamily: "MonsterratBold"))))
       .toList();
 
   @override
@@ -87,38 +96,27 @@ class _MakeARoomState extends State<MakeARoom> {
             ),
           );
       }
-      if (state.isSuccess) {
-        Scaffold.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Room Created',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Icon(Icons.check_circle),
-                ],
-              ),
-              backgroundColor: Colors.brown,
-            ),
-          );
-        print("kucing");
 
+      if (state.isGo) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ChatroomScreen(
+                      roomEmail: state.email,
+                      tipe: _tipe,
+                      nama_room: myController.text,
                       userRepository: _userRepository,
                       email: state.email,
+                      bab: state.bab,
+                      matpel: state.matpel,
+                      soal: _soal,
                     )));
       }
     }, child:
         BlocBuilder<MakeARoomBloc, MakeARoomState>(builder: (context, state) {
       return Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Container(
             color: Colors.greenAccent[500],
@@ -148,12 +146,64 @@ class _MakeARoomState extends State<MakeARoom> {
           Center(
             child: Text(
               "1 Lawan 1",
-              style: TextStyle(color: Colors.white, fontSize: 30),
+              style: TextStyle(color: Colors.white, fontSize: 40),
             ),
           ),
           SizedBox(
             height: 10,
           ),
+          Container(
+              child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Nama Room",
+                  style: TextStyle(
+                      color: Colors.tealAccent[200],
+                      fontFamily: "MonsterratBold",
+                      fontSize: 15.0),
+                ),
+              ),
+              SizedBox(
+                width: 40.0,
+              ),
+              Container(
+                width: 150.0,
+                child: new TextFormField(
+                  controller: myController,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(10),
+                  ],
+                  style: TextStyle(color: Colors.white),
+                  decoration: new InputDecoration(
+                    hintText: "Type here",
+
+                    hintStyle: TextStyle(color: Colors.white),
+                    fillColor: Colors.white,
+                    enabledBorder: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(10.0),
+                      borderSide: new BorderSide(
+                          style: BorderStyle.solid, color: Colors.white),
+                    ),
+                    border: new OutlineInputBorder(
+                      borderRadius: new BorderRadius.circular(10.0),
+                      borderSide: new BorderSide(
+                          style: BorderStyle.solid, color: Colors.white),
+                    ),
+                    //fillColor: Colors.green
+                  ),
+                  validator: (val) {
+                    if (val.length == 0) {
+                      return "Email cannot be empty";
+                    } else {
+                      return null;
+                    }
+                  },
+                ),
+              ),
+            ],
+          )),
           Container(
               child: Row(
             children: <Widget>[
@@ -174,14 +224,14 @@ class _MakeARoomState extends State<MakeARoom> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8.0, left: 8.0),
                   child: DropdownButton(
-                    value: _mapel,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        _mapel = newValue;
-                      });
-                    },
-                    items: this._dropDownMenuMapel,
-                  ),
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                      value: state.matpel,
+                      onChanged: (String newValue) {
+                        _makeARoomBloc.dispatch(MatpelChanged(
+                            matpel: newValue,
+                            bab: matpeltodropvalue(newValue)));
+                      },
+                      items: arrtodropdown(matpelwithoutsemua)),
                 ),
               ),
             ],
@@ -205,14 +255,12 @@ class _MakeARoomState extends State<MakeARoom> {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8.0, left: 8.0),
                   child: DropdownButton(
-                    value: _bab,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        _bab = newValue;
-                      });
-                    },
-                    items: this._dropDownMenuSubmapel,
-                  ),
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                      value: state.bab,
+                      onChanged: (String newValue) {
+                        _makeARoomBloc.dispatch(BabChanged(bab: newValue));
+                      },
+                      items: arrtodropdownmatpel(state.matpel)),
                 ),
               ),
             ],
@@ -252,17 +300,33 @@ class _MakeARoomState extends State<MakeARoom> {
             height: 40,
           ),
           RaisedButton(
+            color: Colors.brown[600],
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             onPressed: () {
-              _makeARoomBloc.dispatch(
-                  BuatRoomPressed(bab: _bab, mapel: _mapel, soal: _soal));
+              if (myController.text.length > 0) {
+                _makeARoomBloc.dispatch(BuatRoomPressed(
+                  nama_room: myController.text,
+                  bab: state.bab,
+                  tipe: _tipe,
+                  mapel: state.matpel,
+                  soal: state.soal,
+                  email: state.email,
+                ));
+              } else {
+                Flushbar(
+                  title: "Room name is required,,",
+                  message: "Please insert room name",
+                  duration: Duration(seconds: 3),
+                  flushbarPosition: FlushbarPosition.TOP,
+                ).show(context);
+              }
             },
             textColor: Colors.white,
             padding: const EdgeInsets.all(0.0),
-            child: Container(
-              color: Colors.brown[600],
-              padding: const EdgeInsets.all(10.0),
-              child:
-                  const Text('Buat Room Baru', style: TextStyle(fontSize: 20)),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Buat Room Baru', style: TextStyle(fontSize: 20)),
             ),
           ),
         ],

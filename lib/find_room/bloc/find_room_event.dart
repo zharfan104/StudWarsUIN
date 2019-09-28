@@ -13,9 +13,14 @@ class SearchPressed extends FindRoomEvent {
   final bool btb;
   final bool obo;
   final bool br;
-
-  SearchPressed(
-      {this.bab, this.matpel, this.soal, this.btb, this.obo, this.br});
+  SearchPressed({
+    this.bab,
+    this.matpel,
+    this.soal,
+    this.btb,
+    this.obo,
+    this.br,
+  });
   @override
   String toString() =>
       'SearchPressed {bab : $bab, matpel:$matpel,soal :$soal, btb:$btb, obo:$obo, br:$br  }';

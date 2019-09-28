@@ -60,13 +60,34 @@ class UserRepository {
           "kalah": 0,
           "Sekolah": "",
           "id": user.uid,
-          "poin": 0
+          "poin": 0,
+          "level": "1",
+          "playwith": "null",
         });
+        prefs.setInt('menang', 0);
+        prefs.setInt('kalah', 0);
+        prefs.setInt('poin', 0);
+        prefs.setString('level', "1");
+        prefs.setString('Sekolah', "Buka Pengaturan");
       } else {
+        final documents = await Firestore.instance
+            .collection('user')
+            .where("email", isEqualTo: user.email)
+            .getDocuments();
+        final userObject = documents.documents.first.data;
+        prefs.setInt('menang', userObject["menang"]);
+        prefs.setInt('kalah', userObject["kalah"]);
+        prefs.setInt('poin', userObject["poin"]);
+        prefs.setString('level', userObject["level"]);
+        prefs.setString('Sekolah', userObject["sekolah"] ?? "Buka Pengaturan");
         print(documents);
       }
+      prefs.setString('email', user.email);
+      prefs.setString('picurl', user.photoUrl);
+      prefs.setString('nama', user.displayName);
+      prefs.setString('id', user.uid);
     }
-    prefs.setString('email', email);
+
     return _firebaseAuth.currentUser();
   }
 
@@ -102,24 +123,26 @@ class UserRepository {
   }
 
   Future<User> getProfile() async {
-    var email = (await _firebaseAuth.currentUser()).email;
-    print("asdasd $email");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    final documents = await Firestore.instance
-        .collection('user')
-        .where("email", isEqualTo: email)
-        .getDocuments();
-    final userObject = documents.documents.first.data;
+    var email = (await _firebaseAuth.currentUser()).email;
+    var nama = prefs.getString('nama');
+    var menang = prefs.getInt('menang');
+    var kalah = prefs.getInt('kalah');
+    var poin = prefs.getInt('poin');
+    var level = prefs.getString('level');
+    var sekolah = prefs.getString('sekolah');
+    var picurl = prefs.getString('picurl');
 
     final User _user = new User(
-        badges: userObject["nama"],
-        email: userObject["email"],
-        kalah: userObject["kalah"],
-        menang: userObject["menang"],
-        nama: userObject["nama"],
-        picurl: userObject["picurl"],
-        level: userObject["level"],
-        sekolah: userObject["sekolah"]);
+        email: email,
+        kalah: kalah,
+        menang: menang,
+        nama: nama,
+        picurl: picurl,
+        level: level,
+        poin: poin,
+        sekolah: sekolah);
     print(_user.badges);
     return _user;
   }

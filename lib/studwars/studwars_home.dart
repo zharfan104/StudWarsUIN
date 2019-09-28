@@ -39,12 +39,12 @@ class StudwarsHome extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => MakeARoomScreen(
+                            tipe: "One On One",
                             userRepository: _userRepository,
                           )));
             },
             child: ListItemMenu(
-              image:
-                  'https://images.squarespace-cdn.com/content/v1/58c83ecfd2b8571e2d227eb1/1492108477967-DH47SBVCCDNIQ3ODYGEZ/ke17ZwdGBToddI8pDm48kAvSyMu6ffSEthbwgkLVsZ57gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z5QHyNOqBUUEtDDsRWrJLTm_iOoQrh0-01aACSoxCNJ60HA1HmI1lPV6gQr4qkUuLWp0zIYXYt662xjIpUCMgfF/logo+lockup.jpg',
+              image: 'assets/one.png',
               title: 'One on One',
             ),
           ),
@@ -63,8 +63,7 @@ class StudwarsHome extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => BeTheBest()));
             },
             child: ListItemMenu(
-              image:
-                  'https://www.freepnglogos.com/uploads/1-number-png/number-1-rankings-georgia-tech-40.png',
+              image: 'assets/best.png',
               title: 'Be The Best',
             ),
           ),
@@ -83,7 +82,7 @@ class StudwarsHome extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => BattleRoyale()));
             },
             child: ListItemMenu(
-              image: 'https://image.flaticon.com/icons/png/512/48/48829.png',
+              image: 'assets/br.png',
               title: 'Battle Royale',
             ),
           )

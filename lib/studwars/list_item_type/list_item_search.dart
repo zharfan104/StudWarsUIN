@@ -11,16 +11,22 @@ class ListItemSearch extends StatelessWidget {
   final int room;
   final String soal;
   final String mapel;
+  final String nama;
   final String bab;
   final int user;
+  final String tipe;
   final bool onPlaying;
   final UserRepository _userRepository;
+  final String roomEmail;
   const ListItemSearch(
       {Key key,
       @required UserRepository userRepository,
       this.image,
       this.email,
       this.room,
+      @required this.roomEmail,
+      this.nama,
+      @required this.tipe,
       this.soal,
       this.mapel,
       this.bab,
@@ -53,7 +59,7 @@ class ListItemSearch extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 MenuTitle(
-                  title: 'Room $room',
+                  title: '$nama',
                 ),
                 Text(
                   '$mapel',
@@ -95,15 +101,22 @@ class ListItemSearch extends StatelessWidget {
                               onPlaying ? Colors.white : Colors.tealAccent[100],
                           fontFamily: "MonsterratBold"),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (onPlaying == false) {
                         UpdateFirebaseRoom.addEnc();
+
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatroomScreen(
+                                      roomEmail: roomEmail,
+                                      tipe: tipe,
+                                      nama_room: nama,
                                       userRepository: _userRepository,
                                       email: email,
+                                      matpel: "Matematika",
+                                      bab: "Aljabar",
+                                      soal: "SBMPTN",
                                     )));
                       }
                     },

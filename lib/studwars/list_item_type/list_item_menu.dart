@@ -13,7 +13,7 @@ class ListItemMenu extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       child: ListTile(
         leading: Container(
-          child: Image.network(image),
+          child: Image.asset(image),
         ),
         title: Container(
           height: 100.0,

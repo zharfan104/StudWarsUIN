@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_listview/easy_listview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firebase_login/dropdownsoal.dart';
 import 'package:flutter_firebase_login/find_room/bloc/bloc.dart';
 import 'package:flutter_firebase_login/studwars/list_item_type/list_item_search.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FindRoom extends StatefulWidget {
   final UserRepository _userRepository;
@@ -26,54 +28,19 @@ List<DropdownMenuItem<String>> c;
 class _FindRoomState extends State<FindRoom> {
   FindRoomBloc _findRoomBloc;
   UserRepository get _userRepository => widget._userRepository;
-
+  String _email;
   @override
   void initState() {
+    _getEmail();
+
     super.initState();
     _findRoomBloc = BlocProvider.of<FindRoomBloc>(context);
   }
 
-  static const matpel = <String>[
-    'Matematika',
-    'Fisika',
-    'Kimia',
-    'Biologi',
-    'Semua'
-  ];
-  static List<String> matematika = <String>[
-    'Aljabar',
-    'Trigonometri',
-    'Bangun Ruang',
-    'Fungsi',
-    'Semua'
-  ];
-  static List<String> fisika = <String>[
-    'Vektor',
-    'Dinamika Rotasi',
-    'Dinamika Gerak',
-    'Listrik',
-    'Semua'
-  ];
-  static List<String> biologi = <String>[
-    'Sel',
-    'Jaringan',
-    'Sistem Tubuh',
-    'Semua'
-  ];
-  static List<String> kimia = <String>[
-    'Atom',
-    'Kim. Unsur',
-    'Kim. Organik',
-    'Semua'
-  ];
-  static List<String> semua = <String>['Semua'];
-  var semuabab =
-      [matematika, kimia, fisika, biologi].expand((x) => x).toSet().toList();
-
-  static const soal = <String>['SIMAK UI', 'SBMPTN', 'UM', 'Semua'];
-  String _btnsoal = "Semua";
-
-  static const String _btnBabSelected = "Semua Bab";
+  _getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _email = prefs.getString("email");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,9 +87,12 @@ class _FindRoomState extends State<FindRoom> {
                         itemCount: snapshot.data.documents.length,
                         itemBuilder: (context, index) {
                           return ListItemSearch(
+                              nama: snapshot.data.documents[index]["nama"],
+                              tipe: snapshot.data.documents[index]["tipe"],
                               userRepository: _userRepository,
-                              email: snapshot.data.documents[index]["email"] ??
-                                  "zharfan.akbar104@gmail.com",
+                              email: _email ?? "zharfan.akbar104@gmail.com",
+                              roomEmail: snapshot.data.documents[index]
+                                  ["email"],
                               user: snapshot.data.documents[index]["user"] ?? 0,
                               image:
                                   'https://images.squarespace-cdn.com/content/v1/58c83ecfd2b8571e2d227eb1/1492108477967-DH47SBVCCDNIQ3ODYGEZ/ke17ZwdGBToddI8pDm48kAvSyMu6ffSEthbwgkLVsZ57gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z5QHyNOqBUUEtDDsRWrJLTm_iOoQrh0-01aACSoxCNJ60HA1HmI1lPV6gQr4qkUuLWp0zIYXYt662xjIpUCMgfF/logo+lockup.jpg',
@@ -283,43 +253,6 @@ class _FindRoomState extends State<FindRoom> {
         ],
       ),
     );
-  }
-
-  List<DropdownMenuItem<String>> arrtodropdown(List<String> arr) {
-    List<DropdownMenuItem<String>> x = arr
-        .map((String value) => DropdownMenuItem<String>(
-            value: value,
-            child: Text(value, style: TextStyle(color: Colors.black))))
-        .toList();
-    return x;
-  }
-
-  List<DropdownMenuItem<String>> arrtodropdownmatpel(String matpel) {
-    if (matpel == "Kimia") {
-      return arrtodropdown(kimia);
-    } else if (matpel == "Fisika") {
-      return arrtodropdown(fisika);
-    } else if (matpel == "Matematika") {
-      return arrtodropdown(matematika);
-    } else if (matpel == "Biologi") {
-      return arrtodropdown(biologi);
-    } else {
-      return arrtodropdown(semuabab);
-    }
-  }
-
-  String matpeltodropvalue(String matpel) {
-    if (matpel == "Kimia") {
-      return kimia[0];
-    } else if (matpel == "Fisika") {
-      return fisika[0];
-    } else if (matpel == "Matematika") {
-      return matematika[0];
-    } else if (matpel == "Biologi") {
-      return biologi[0];
-    } else {
-      return "Semua";
-    }
   }
 }
 

@@ -7,9 +7,12 @@ import 'bloc/bloc.dart';
 
 class MakeARoomScreen extends StatelessWidget {
   UserRepository _userRepository;
-  MakeARoomScreen({Key key, @required UserRepository userRepository})
+  String _tipe;
+  MakeARoomScreen(
+      {Key key, @required UserRepository userRepository, @required String tipe})
       : assert(userRepository != null),
         _userRepository = userRepository,
+        _tipe = tipe,
         super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -18,6 +21,7 @@ class MakeARoomScreen extends StatelessWidget {
         body: BlocProvider<MakeARoomBloc>(
           builder: (context) => MakeARoomBloc(userRepository: _userRepository),
           child: MakeARoom(
+            tipe: _tipe,
             userRepository: _userRepository,
           ),
         ));

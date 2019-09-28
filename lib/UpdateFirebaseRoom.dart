@@ -37,17 +37,24 @@ class UpdateFirebaseRoom {
   //   });
   // }
 
-  static Future<Null> addRoom({String mapel, String bab, String soal}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //Return String
-    String email = prefs.getString('email');
-    await Firestore.instance.collection('room').document(email).setData({
+  static Future<Null> addRoom(
+      {String mapel,
+      String nama_room,
+      String bab,
+      String soal,
+      String email,
+      String tipe}) async {
+    await Firestore.instance
+        .collection('room')
+        .document(email + " " + nama_room)
+        .setData({
       "matpel": mapel,
       "bab": bab,
       "soal": soal,
+      "nama": nama_room,
       "email": email,
       "user": 1,
-      "tipe": "One On One",
+      "tipe": tipe,
       "onChat": true,
       "onPlaying": false
     });

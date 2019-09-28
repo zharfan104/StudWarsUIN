@@ -30,7 +30,10 @@ class ListItemLeaderboard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(child: MenuTitle(title: nama.substring(0, 10))),
+                Container(
+                    child: MenuTitle(
+                        title:
+                            nama.length > 10 ? nama.substring(0, 10) : nama)),
                 Text('menang : $menang'),
                 SizedBox(
                   height: 2,
@@ -51,8 +54,9 @@ class ListItemLeaderboard extends StatelessWidget {
               child: Text(
                 '$rank',
                 style: TextStyle(
-                    color: Colors.deepPurple,
+                    color: rank == 1 ? Colors.yellow : Colors.deepPurple,
                     fontSize: 40,
+                    fontFamily: "MonsterratBold",
                     fontStyle: FontStyle.normal,
                     fontWeight: FontWeight.bold),
               ),

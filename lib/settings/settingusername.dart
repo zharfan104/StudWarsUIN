@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingUsername extends StatefulWidget {
@@ -21,6 +22,9 @@ class _SettingUsernameState extends State<SettingUsername> {
         children: <Widget>[
           ListTile(
               title: TextField(
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(10),
+            ],
             controller: myController,
             decoration: InputDecoration(
               hintText: "Type Your New Username Here",
@@ -30,7 +34,6 @@ class _SettingUsernameState extends State<SettingUsername> {
           SizedBox(
             height: 20.0,
           ),
-          Text("Username terdiri dari maksimal 8 karakter."),
           SizedBox(
             height: 20.0,
           ),
@@ -60,6 +63,7 @@ class Tombol extends StatelessWidget {
             Firestore.instance.collection('user').document(email).updateData({
               "nama": myController.text,
             });
+            await prefs.setString("nama", myController.text);
 
             Scaffold.of(context).showSnackBar(
               SnackBar(

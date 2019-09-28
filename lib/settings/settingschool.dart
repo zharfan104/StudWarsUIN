@@ -55,6 +55,7 @@ class Tombolnya extends StatelessWidget {
           Firestore.instance.collection('user').document(email).updateData({
             "sekolah": myController.text,
           });
+          await prefs.setString("sekolah", myController.text);
           Scaffold.of(context).showSnackBar(
             SnackBar(
               content: Row(

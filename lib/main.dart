@@ -5,13 +5,9 @@ import 'package:flutter_firebase_login/authentication_bloc/bloc.dart';
 import 'package:flutter_firebase_login/main_menu.dart';
 
 import 'package:flutter_firebase_login/splash_screen.dart';
-import 'package:flutter_firebase_login/studwars/main_menu.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
 import 'package:flutter_firebase_login/login/login.dart';
 import 'package:flutter_firebase_login/simple_bloc_delegate.dart';
-
-import 'chat_room/chat_room.dart';
-import 'oneononegame/bloc/oneononeroom.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -51,7 +47,11 @@ class App extends StatelessWidget {
           return SplashScreen();
         },
       ),
-      theme: ThemeData(canvasColor: Colors.teal[100], fontFamily: "Monsterrat"),
+      theme: ThemeData(
+          primaryColor: Colors.white,
+          primaryColorDark: Colors.red,
+          canvasColor: Colors.teal[100],
+          fontFamily: "Monsterrat"),
     );
   }
 }
