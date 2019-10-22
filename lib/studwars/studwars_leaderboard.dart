@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'list_item_type/list_item_leaderboard.dart';
+import 'package:flutter_firebase_login/list_item_type/list_item_leaderboard.dart';
 
 class StudwarsLeaderboard extends StatefulWidget {
   @override

@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_firebase_login/UpdateFirebaseRoom.dart';
-import 'package:flutter_firebase_login/user_repository.dart';
 import 'package:meta/meta.dart';
 import './bloc.dart';
 
 class MakeARoomBloc extends Bloc<MakeARoomEvent, MakeARoomState> {
-  UserRepository _userRepository;
+  // UserRepository _userRepository;
 
-  MakeARoomBloc({
-    @required UserRepository userRepository,
-  })  : assert(userRepository != null),
-        _userRepository = userRepository;
+  // MakeARoomBloc({
+  //   @required UserRepository userRepository,
+  // })  : assert(userRepository != null),
+  //       _userRepository = userRepository;
   @override
   MakeARoomState get initialState => MakeARoomState.empty();
 
@@ -24,7 +23,7 @@ class MakeARoomBloc extends Bloc<MakeARoomEvent, MakeARoomState> {
           bab: event.bab,
           mapel: event.mapel,
           tipe: event.tipe,
-          nama_room: event.nama_room,
+          namaRoom: event.namaRoom,
           soal: event.soal,
           email: event.email);
     } else if (event is MatpelChanged) {
@@ -39,14 +38,14 @@ class MakeARoomBloc extends Bloc<MakeARoomEvent, MakeARoomState> {
       String bab,
       String soal,
       String email,
-      @required String nama_room,
+      @required String namaRoom,
       @required String tipe}) async* {
     try {
       yield currentState.update(isSubmitting: true);
 
       await UpdateFirebaseRoom.addRoom(
           tipe: tipe,
-          nama_room: nama_room,
+          namaRoom: namaRoom,
           mapel: mapel,
           soal: soal,
           bab: bab,
@@ -56,7 +55,7 @@ class MakeARoomBloc extends Bloc<MakeARoomEvent, MakeARoomState> {
           email: email,
           onPlay: false,
           isSuccess: true,
-          isSubmitting: false,
+          isSubmitting: true,
           isGo: true);
     } catch (_) {
       print("SD" + _);

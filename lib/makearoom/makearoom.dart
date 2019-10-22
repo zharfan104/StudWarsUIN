@@ -12,8 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'bloc/bloc.dart';
 
 class MakeARoom extends StatefulWidget {
-  UserRepository _userRepository;
-  String _tipe;
+  final UserRepository _userRepository;
+  final String _tipe;
   MakeARoom(
       {Key key, @required UserRepository userRepository, @required String tipe})
       : assert(userRepository != null),
@@ -29,6 +29,7 @@ class _MakeARoomState extends State<MakeARoom> {
 
   UserRepository get _userRepository => widget._userRepository;
   String get _tipe => widget._tipe;
+  String email;
   final myController = TextEditingController();
 
   @override
@@ -36,6 +37,12 @@ class _MakeARoomState extends State<MakeARoom> {
     super.initState();
     _makeARoomBloc = BlocProvider.of<MakeARoomBloc>(context);
     myController.addListener(_printLatestValue);
+    getEmail();
+  }
+
+  void getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    email = prefs.getString("email");
   }
 
   @override
@@ -56,7 +63,6 @@ class _MakeARoomState extends State<MakeARoom> {
     'Kimia',
     'Biologi'
   ];
-  String _mapel = "Matematika";
 
   static const jenisUjian = <String>['SIMAK UI', 'SBMPTN', 'UM'];
   String _soal = "SBMPTN";
@@ -67,7 +73,6 @@ class _MakeARoomState extends State<MakeARoom> {
     'Bangun Ruang',
     'Fungsi'
   ];
-  String _bab = "Aljabar";
 
   final List<DropdownMenuItem<String>> _dropDownMenuUjian = jenisUjian
       .map((String value) => DropdownMenuItem<String>(
@@ -102,11 +107,12 @@ class _MakeARoomState extends State<MakeARoom> {
             context,
             MaterialPageRoute(
                 builder: (context) => ChatroomScreen(
-                      roomEmail: state.email,
+                      roomEmail: email,
                       tipe: _tipe,
-                      nama_room: myController.text,
+                      user: 0,
+                      namaRoom: myController.text,
                       userRepository: _userRepository,
-                      email: state.email,
+                      email: email,
                       bab: state.bab,
                       matpel: state.matpel,
                       soal: _soal,
@@ -114,9 +120,7 @@ class _MakeARoomState extends State<MakeARoom> {
       }
     }, child:
         BlocBuilder<MakeARoomBloc, MakeARoomState>(builder: (context, state) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
+      return ListView(
         children: <Widget>[
           Container(
             color: Colors.greenAccent[500],
@@ -133,7 +137,7 @@ class _MakeARoomState extends State<MakeARoom> {
                 ),
                 Center(
                   child: Text(
-                    "Buat Room Baru",
+                    "Make a New Room",
                     style: TextStyle(
                         color: Colors.tealAccent[100],
                         fontSize: 30.0,
@@ -145,7 +149,7 @@ class _MakeARoomState extends State<MakeARoom> {
           ),
           Center(
             child: Text(
-              "1 Lawan 1",
+              "One On One",
               style: TextStyle(color: Colors.white, fontSize: 40),
             ),
           ),
@@ -299,34 +303,37 @@ class _MakeARoomState extends State<MakeARoom> {
           SizedBox(
             height: 40,
           ),
-          RaisedButton(
-            color: Colors.brown[600],
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            onPressed: () {
-              if (myController.text.length > 0) {
-                _makeARoomBloc.dispatch(BuatRoomPressed(
-                  nama_room: myController.text,
-                  bab: state.bab,
-                  tipe: _tipe,
-                  mapel: state.matpel,
-                  soal: state.soal,
-                  email: state.email,
-                ));
-              } else {
-                Flushbar(
-                  title: "Room name is required,,",
-                  message: "Please insert room name",
-                  duration: Duration(seconds: 3),
-                  flushbarPosition: FlushbarPosition.TOP,
-                ).show(context);
-              }
-            },
-            textColor: Colors.white,
-            padding: const EdgeInsets.all(0.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text('Buat Room Baru', style: TextStyle(fontSize: 20)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: RaisedButton(
+              color: Colors.brown[600],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              onPressed: () {
+                if (myController.text.length > 0) {
+                  _makeARoomBloc.dispatch(BuatRoomPressed(
+                    namaRoom: myController.text,
+                    bab: state.bab,
+                    tipe: _tipe,
+                    mapel: state.matpel,
+                    soal: _soal,
+                    email: email,
+                  ));
+                } else {
+                  Flushbar(
+                    title: "Room name is required,,",
+                    message: "Please insert room name",
+                    duration: Duration(seconds: 3),
+                    flushbarPosition: FlushbarPosition.TOP,
+                  ).show(context);
+                }
+              },
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('Make a New Room', style: TextStyle(fontSize: 20)),
+              ),
             ),
           ),
         ],

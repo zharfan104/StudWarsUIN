@@ -14,7 +14,9 @@ class FindRoomScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<FindRoomBloc>(
-      builder: (context) => FindRoomBloc(userRepository: _userRepository),
+      // builder: (context) => FindRoomBloc(userRepository: _userRepository),
+      builder: (context) => FindRoomBloc(),
+
       child: FindRoom(
         userRepository: _userRepository,
       ),

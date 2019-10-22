@@ -15,7 +15,19 @@ class _SettingUsernameState extends State<SettingUsername> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Username Setting'),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          'Username Setting',
+          style: TextStyle(color: Colors.white, fontFamily: "MonsterratBold"),
+        ),
         backgroundColor: Colors.grey.shade800,
       ),
       body: Column(
@@ -59,6 +71,22 @@ class Tombol extends StatelessWidget {
         onPressed: () async {
           if (myController.text.length <= 10 && myController.text.length > 0) {
             SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Wait for a moment',
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                    ),
+                    CircularProgressIndicator()
+                  ],
+                ),
+                backgroundColor: Colors.brown,
+              ),
+            );
             var email = prefs.getString("email");
             Firestore.instance.collection('user').document(email).updateData({
               "nama": myController.text,
@@ -89,6 +117,9 @@ class Tombol extends StatelessWidget {
             ).show(context);
           }
         },
-        child: Text('Submit'));
+        child: Text(
+          'Submit',
+          style: TextStyle(color: Colors.white, fontFamily: "MonsterratBold"),
+        ));
   }
 }

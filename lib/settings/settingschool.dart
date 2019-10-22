@@ -14,7 +14,19 @@ class _SettingSchoolState extends State<SettingSchool> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('School Setting'),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        title: Text(
+          'School Setting',
+          style: TextStyle(color: Colors.white, fontFamily: "MonsterratBold"),
+        ),
         backgroundColor: Colors.grey.shade800,
       ),
       body: Column(
@@ -50,28 +62,71 @@ class Tombolnya extends StatelessWidget {
     return RaisedButton(
         color: Colors.green,
         onPressed: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          var email = prefs.getString("email");
-          Firestore.instance.collection('user').document(email).updateData({
-            "sekolah": myController.text,
-          });
-          await prefs.setString("sekolah", myController.text);
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'School has changed!',
-                    style: TextStyle(fontFamily: "MonsterratBold"),
-                  ),
-                  Icon(Icons.check_circle)
-                ],
+          if (myController.text.length == 0) {
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Please input your school name!',
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                    ),
+                    Icon(
+                      Icons.info,
+                      color: Colors.white,
+                    )
+                  ],
+                ),
+                backgroundColor: Colors.brown,
               ),
-              backgroundColor: Colors.brown,
-            ),
-          );
+            );
+          } else {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            var email = prefs.getString("email");
+            print(email);
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Wait for a moment',
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                    ),
+                    CircularProgressIndicator()
+                  ],
+                ),
+                backgroundColor: Colors.brown,
+              ),
+            );
+            await Firestore.instance
+                .collection('user')
+                .document(email)
+                .updateData({
+              "Sekolah": myController.text,
+            });
+            await prefs.setString("sekolah", myController.text);
+            Scaffold.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'School has changed!',
+                      style: TextStyle(fontFamily: "MonsterratBold"),
+                    ),
+                    Icon(Icons.check_circle)
+                  ],
+                ),
+                backgroundColor: Colors.brown,
+              ),
+            );
+          }
         },
-        child: Text('Submit'));
+        child: Text(
+          'Submit',
+          style: TextStyle(color: Colors.white, fontFamily: "MonsterratBold"),
+        ));
   }
 }

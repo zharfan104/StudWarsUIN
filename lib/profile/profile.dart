@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firebase_login/list_item_type/list_item_badges.dart';
 import 'package:flutter_firebase_login/profile/bloc/bloc.dart';
-import 'package:flutter_firebase_login/studwars/list_item_type/list_item_badges.dart';
 import 'package:flutter_firebase_login/user.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
 
@@ -29,7 +30,6 @@ class _ProfileItemState extends State<ProfilePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _profileBloc.dispose();
     super.dispose();
   }
@@ -46,8 +46,7 @@ class _ProfileItemState extends State<ProfilePage> {
                 child: Text(
                   'Profile',
                   style: TextStyle(
-                      fontFamily: "MonsterratBold",
-                      color: Colors.tealAccent[300]),
+                      fontFamily: "MonsterratBold", color: Colors.white),
                 ),
               ),
               backgroundColor: Colors.brown[600],
@@ -94,50 +93,87 @@ class KaruIdentitas extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: new Container(
-                width: 90.0,
-                height: 90.0,
-                decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: new DecorationImage(
-                        fit: BoxFit.fill,
-                        image: new NetworkImage(user.picurl)))),
-          ),
-          SizedBox(
-            width: 20.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(cekNama(user.nama) ?? "Loading.....",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-                Text(user.sekolah ?? "(Ganti Sekolah di Pengaturan)"),
-                Row(
-                  children: <Widget>[
-                    Text('Win : ${user.menang}'),
-                    SizedBox(
-                      width: 20.0,
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('user')
+            .document(user.email)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else {
+            var userDocument = snapshot.data;
+
+            String nama = userDocument["nama"];
+            var menang = userDocument["menang"];
+            var kalah = userDocument["kalah"];
+            var sekolah = userDocument["Sekolah"];
+            var level = userDocument["level"];
+
+            return Card(
+              color: Colors.white,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: new Container(
+                        width: 90.0,
+                        height: 90.0,
+                        decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: new NetworkImage(user.picurl)))),
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(cekNama(nama) ?? "Loading.....",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24)),
+                        Text(
+                          (sekolah == "")
+                              ? "Change School On setting"
+                              : sekolah,
+                          style: TextStyle(fontFamily: "MonsterratBold"),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              'Win : $menang',
+                              style: TextStyle(fontFamily: "MonsterratBold"),
+                            ),
+                            SizedBox(
+                              width: 20.0,
+                            ),
+                            Text(
+                              'Lost : $kalah',
+                              style: TextStyle(fontFamily: "MonsterratBold"),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Level : $level',
+                          style: TextStyle(fontFamily: "MonsterratBold"),
+                        ),
+                      ],
                     ),
-                    Text('Lost : ${user.kalah}'),
-                  ],
-                ),
-                Text('Level : ${user.level}'),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+                  )
+                ],
+              ),
+            );
+          }
+        });
   }
 
   String cekNama(String nama) {

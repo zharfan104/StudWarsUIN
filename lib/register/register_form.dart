@@ -10,6 +10,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
 
   RegisterBloc _registerBloc;
 
@@ -87,6 +88,20 @@ class _RegisterFormState extends State<RegisterForm> {
                       ),
                     ),
                     TextFormField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.email),
+                        labelText: 'Username',
+                      ),
+                      autocorrect: false,
+                      autovalidate: true,
+                      validator: (_) {
+                        return !state.isUsernameValid
+                            ? 'Invalid Username'
+                            : null;
+                      },
+                    ),
+                    TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         icon: Icon(Icons.email),
@@ -150,6 +165,7 @@ class _RegisterFormState extends State<RegisterForm> {
   void _onFormSubmitted() {
     _registerBloc.dispatch(
       Submitted(
+        username: _usernameController.text,
         email: _emailController.text,
         password: _passwordController.text,
       ),

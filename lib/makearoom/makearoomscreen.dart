@@ -6,8 +6,8 @@ import 'package:flutter_firebase_login/user_repository.dart';
 import 'bloc/bloc.dart';
 
 class MakeARoomScreen extends StatelessWidget {
-  UserRepository _userRepository;
-  String _tipe;
+  final UserRepository _userRepository;
+  final String _tipe;
   MakeARoomScreen(
       {Key key, @required UserRepository userRepository, @required String tipe})
       : assert(userRepository != null),
@@ -19,7 +19,7 @@ class MakeARoomScreen extends StatelessWidget {
     return Scaffold(
         backgroundColor: Colors.grey.shade800,
         body: BlocProvider<MakeARoomBloc>(
-          builder: (context) => MakeARoomBloc(userRepository: _userRepository),
+          builder: (context) => MakeARoomBloc(),
           child: MakeARoom(
             tipe: _tipe,
             userRepository: _userRepository,

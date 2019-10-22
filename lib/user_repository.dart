@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_firebase_login/user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
@@ -15,22 +16,11 @@ class UserRepository {
 
   Future<FirebaseUser> signInWithGoogle() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    print("Masuk1");
-
-    print("Masuk2");
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-
-    print("Masuk2");
 
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    bool isLoggedIn = await googleSignIn.isSignedIn();
-    if (isLoggedIn) {
-      print("Bang");
-    }
+    // final GoogleSignIn googleSignIn = GoogleSignIn();
 
     print(googleAuth.accessToken);
     print(googleAuth.idToken);
@@ -98,11 +88,49 @@ class UserRepository {
     );
   }
 
-  Future<void> signUp({String email, String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<void> signUp(
+      {String email, String password, @required String username}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final QuerySnapshot result = await Firestore.instance
+        .collection("user")
+        .where("email", isEqualTo: email)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+    if (documents.isEmpty) {
+      AuthResult authResult =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      FirebaseUser user = authResult.user;
+      String photourl =
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png";
+      String userid = user.uid;
+      await Firestore.instance.collection('user').document(email).setData({
+        "email": email,
+        "picurl": photourl,
+        "nama": username,
+        "menang": 0,
+        "kalah": 0,
+        "Sekolah": "Buka Pengaturan",
+        "id": userid,
+        "poin": 0,
+        "level": "1",
+        "playwith": "null",
+      });
+      prefs.setInt('menang', 0);
+      prefs.setInt('kalah', 0);
+      prefs.setInt('poin', 0);
+      prefs.setString('level', "1");
+      prefs.setString('Sekolah', "Buka Pengaturan");
+      prefs.setString('email', email);
+      prefs.setString('picurl', photourl);
+      prefs.setString('nama', username);
+      prefs.setString('id', userid);
+    } else {}
+
+    return null;
   }
 
   Future<void> signOut() async {

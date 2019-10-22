@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class BeTheBest extends StatelessWidget {
-  String _mapel = 'Fisika';
-  String _subBab = 'Dinamika';
-  String _soal = 'Berapa percepatan gravitasi bumi ?';
-  int pMusuh = 222;
-  int pPlayer = 123;
-  String benar = '10 m/s^2';
-  String salah1 = '7 m/s^2';
-  String salah2 = '2 m/s^2';
-  String salah3 = '5 m/s^2';
+  final String _mapel = 'Fisika';
+  final String _subBab = 'Dinamika';
+  final String _soal = 'Berapa percepatan gravitasi bumi ?';
+  final int pMusuh = 222;
+  final int pPlayer = 123;
+  final String benar = '10 m/s^2';
+  final String salah1 = '7 m/s^2';
+  final String salah2 = '2 m/s^2';
+  final String salah3 = '5 m/s^2';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +95,7 @@ class BeTheBest extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: Center(
                                   child: Text(
-                                'Point kamu : $pPlayer',
+                                'Pofinal int kamu : $pPlayer',
                                 style: TextStyle(
                                     fontFamily: "MonsterratBold",
                                     color: Colors.white),

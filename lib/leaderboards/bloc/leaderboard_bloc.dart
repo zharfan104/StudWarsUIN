@@ -9,7 +9,5 @@ class LeaderboardBloc extends Bloc<LeaderboardEvent, LeaderboardState> {
   @override
   Stream<LeaderboardState> mapEventToState(
     LeaderboardEvent event,
-  ) async* {
-    // TODO: Add Logic
-  }
+  ) async* {}
 }

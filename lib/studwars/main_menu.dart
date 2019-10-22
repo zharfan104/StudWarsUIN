@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_firebase_login/authentication_bloc/bloc.dart';
-import 'package:flutter_firebase_login/studwars/studwars_home.dart';
 import 'package:flutter_firebase_login/studwars/studwars_leaderboard.dart';
 import 'package:flutter_firebase_login/studwars/studwars_profile.dart';
+import 'package:flutter_firebase_login/studwars_home.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -32,9 +32,7 @@ class _MainMenuAwalState extends State<MainMenuAwal> {
       userRepository: _userRepository,
     ));
     _tabListView.add(StudwarsLeaderboard());
-    _tabListView.add(StudwarsProfile(
-      userRepository: _userRepository,
-    ));
+    _tabListView.add(StudwarsProfile());
 
     _appBarList.add(_builderAppBar("Make A Room"));
     _appBarList.add(_builderAppBarSearch());

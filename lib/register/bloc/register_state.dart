@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 class RegisterState {
   final bool isEmailValid;
   final bool isPasswordValid;
+  final bool isUsernameValid;
+
   final bool isSubmitting;
   final bool isSuccess;
   final bool isFailure;
@@ -16,55 +18,55 @@ class RegisterState {
     @required this.isSubmitting,
     @required this.isSuccess,
     @required this.isFailure,
+    @required this.isUsernameValid,
   });
 
   factory RegisterState.empty() {
     return RegisterState(
-      isEmailValid: true,
-      isPasswordValid: true,
-      isSubmitting: false,
-      isSuccess: false,
-      isFailure: false,
-    );
+        isEmailValid: true,
+        isPasswordValid: true,
+        isSubmitting: false,
+        isSuccess: false,
+        isFailure: false,
+        isUsernameValid: true);
   }
 
   factory RegisterState.loading() {
     return RegisterState(
-      isEmailValid: true,
-      isPasswordValid: true,
-      isSubmitting: true,
-      isSuccess: false,
-      isFailure: false,
-    );
+        isEmailValid: true,
+        isPasswordValid: true,
+        isSubmitting: true,
+        isSuccess: false,
+        isFailure: false,
+        isUsernameValid: true);
   }
 
   factory RegisterState.failure() {
     return RegisterState(
-      isEmailValid: true,
-      isPasswordValid: true,
-      isSubmitting: false,
-      isSuccess: false,
-      isFailure: true,
-    );
+        isEmailValid: true,
+        isPasswordValid: true,
+        isSubmitting: false,
+        isSuccess: false,
+        isFailure: true,
+        isUsernameValid: true);
   }
 
   factory RegisterState.success() {
     return RegisterState(
-      isEmailValid: true,
-      isPasswordValid: true,
-      isSubmitting: false,
-      isSuccess: true,
-      isFailure: false,
-    );
+        isEmailValid: true,
+        isPasswordValid: true,
+        isSubmitting: false,
+        isSuccess: true,
+        isFailure: false,
+        isUsernameValid: true);
   }
 
-  RegisterState update({
-    bool isEmailValid,
-    bool isPasswordValid,
-  }) {
+  RegisterState update(
+      {bool isEmailValid, bool isPasswordValid, bool isUsernameValid}) {
     return copyWith(
       isEmailValid: isEmailValid,
       isPasswordValid: isPasswordValid,
+      isUsernameValid: isUsernameValid,
       isSubmitting: false,
       isSuccess: false,
       isFailure: false,
@@ -77,15 +79,16 @@ class RegisterState {
     bool isSubmitEnabled,
     bool isSubmitting,
     bool isSuccess,
+    bool isUsernameValid,
     bool isFailure,
   }) {
     return RegisterState(
-      isEmailValid: isEmailValid ?? this.isEmailValid,
-      isPasswordValid: isPasswordValid ?? this.isPasswordValid,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isSuccess: isSuccess ?? this.isSuccess,
-      isFailure: isFailure ?? this.isFailure,
-    );
+        isEmailValid: isEmailValid ?? this.isEmailValid,
+        isPasswordValid: isPasswordValid ?? this.isPasswordValid,
+        isSubmitting: isSubmitting ?? this.isSubmitting,
+        isSuccess: isSuccess ?? this.isSuccess,
+        isFailure: isFailure ?? this.isFailure,
+        isUsernameValid: isUsernameValid ?? this.isUsernameValid);
   }
 
   @override

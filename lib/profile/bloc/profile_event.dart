@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_firebase_login/user_repository.dart';
 import 'package:meta/meta.dart';
 
 @immutable

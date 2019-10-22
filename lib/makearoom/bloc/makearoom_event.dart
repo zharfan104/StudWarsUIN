@@ -11,12 +11,12 @@ class BuatRoomPressed extends MakeARoomEvent {
   final String soal;
   final String mapel;
   final String email;
-  final String nama_room;
+  final String namaRoom;
   final String tipe;
   BuatRoomPressed(
       {@required this.bab,
       @required this.soal,
-      @required this.nama_room,
+      @required this.namaRoom,
       @required this.tipe,
       @required this.mapel,
       @required this.email});

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_login/studwars/list_item_type/list_item_badges.dart';
-import 'package:flutter_firebase_login/user_repository.dart';
+import 'package:flutter_firebase_login/list_item_type/list_item_badges.dart';
 
 import 'charttest.dart';
 
 class StudwarsProfile extends StatefulWidget {
-  final UserRepository _userRepository;
+  // final UserRepository _userRepository;
 
-  StudwarsProfile({Key key, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
+  // StudwarsProfile({Key key, @required UserRepository userRepository})
+  //     : assert(userRepository != null),
+  //       _userRepository = userRepository,
+  //       super(key: key);
   @override
   _ProfileItemState createState() => _ProfileItemState();
 }

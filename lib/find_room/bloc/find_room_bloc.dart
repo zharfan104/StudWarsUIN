@@ -1,19 +1,17 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter_firebase_login/user_repository.dart';
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_firebase_login/find_room/bloc/find_room_event.dart';
 import './bloc.dart';
 
 class FindRoomBloc extends Bloc<FindRoomEvent, FindRoomState> {
-  UserRepository _userRepository;
+  // UserRepository _userRepository;
 
-  FindRoomBloc({
-    @required UserRepository userRepository,
-  })  : assert(userRepository != null),
-        _userRepository = userRepository;
+  // FindRoomBloc({
+  //   @required UserRepository userRepository,
+  // })  : assert(userRepository != null),
+  //       _userRepository = userRepository;
 
   @override
   FindRoomState get initialState => FindRoomState.empty();

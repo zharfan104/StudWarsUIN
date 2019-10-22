@@ -1,10 +1,17 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firebase_login/UpdateFirebaseRoom.dart';
+import 'package:flutter_firebase_login/chat_room/bloc/bloc.dart';
+import 'package:flutter_firebase_login/chat_room/bloc/chatroom_bloc.dart';
+import 'package:flutter_firebase_login/main.dart';
+import 'package:flutter_firebase_login/oneonone/contoh_soal.dart';
+import 'package:flutter_firebase_login/oneonone/oneononescreen.dart';
 import 'package:flutter_firebase_login/user_repository.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,23 +27,24 @@ class Chat extends StatefulWidget {
   final String email;
   final String bab;
   final String roomEmail;
-  UserRepository userRepository;
+  final UserRepository userRepository;
 
   final String matpel;
   final String soal;
   final String tipe;
-  final String nama_room;
-
+  final String namaRoom;
+  final int user;
   Chat(
       {Key key,
       @required this.peerId,
       @required this.peerAvatar,
       @required this.userRepository,
+      @required this.user,
       this.email,
       @required this.roomEmail,
       this.bab,
       this.matpel,
-      this.nama_room,
+      this.namaRoom,
       this.tipe,
       this.soal})
       : super(key: key);
@@ -44,10 +52,12 @@ class Chat extends StatefulWidget {
   @override
   State createState() => new ChatState(
       roomEmail: roomEmail,
+      user: user,
       peerId: peerId,
       peerAvatar: peerAvatar,
       bab: bab,
-      nama_room: nama_room,
+      userRepository: userRepository,
+      namaRoom: namaRoom,
       email: email,
       matpel: matpel,
       tipe: tipe,
@@ -60,26 +70,28 @@ class ChatState extends State<Chat> {
       @required this.bab,
       @required this.matpel,
       @required this.soal,
-      @required this.nama_room,
+      @required this.namaRoom,
+      @required this.userRepository,
       @required this.tipe,
       @required this.roomEmail,
+      @required this.user,
       Key key,
       @required this.peerId,
       @required this.peerAvatar});
   String email;
   String bab;
+  int user;
   String matpel;
+  UserRepository userRepository;
   String tipe;
   String soal;
-  String nama_room;
+  String namaRoom;
   String peerId;
   String peerAvatar;
-
   String roomEmail;
   var listMessage;
   String groupChatId;
   SharedPreferences prefs;
-
   File imageFile;
   bool isLoading;
   bool isShowSticker;
@@ -89,10 +101,11 @@ class ChatState extends State<Chat> {
       new TextEditingController();
   final ScrollController listScrollController = new ScrollController();
   final FocusNode focusNode = new FocusNode();
-
+  ChatroomBloc3 _chatroomBloc3;
   @override
   void initState() {
     groupChatId = '';
+    _chatroomBloc3 = BlocProvider.of<ChatroomBloc3>(context);
 
     readLocal();
 
@@ -114,20 +127,10 @@ class ChatState extends State<Chat> {
 
   readLocal() async {
     if (email.hashCode <= peerId.hashCode) {
-      groupChatId = '$nama_room-$roomEmail';
+      groupChatId = '$namaRoom-$roomEmail';
     } else {
-      groupChatId = '$nama_room-$roomEmail';
+      groupChatId = '$namaRoom-$roomEmail';
     }
-
-    Firestore.instance
-        .collection('user')
-        .document(email)
-        .updateData({'playwith': groupChatId});
-// Get document reference
-    Firestore.instance
-        .collection('room')
-        .document(groupChatId)
-        .updateData({'user': FieldValue.increment(1)});
 
     setState(() {});
   }
@@ -137,25 +140,6 @@ class ChatState extends State<Chat> {
     focusNode.unfocus();
     setState(() {
       isShowSticker = !isShowSticker;
-    });
-  }
-
-  Future uploadFile() async {
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
-    StorageUploadTask uploadTask = reference.putFile(imageFile);
-    StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
-    storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
-      imageUrl = downloadUrl;
-      setState(() {
-        isLoading = false;
-        onSendMessage(imageUrl, 1);
-      });
-    }, onError: (err) {
-      setState(() {
-        isLoading = false;
-      });
-      Fluttertoast.showToast(msg: 'This file is not an image');
     });
   }
 
@@ -171,11 +155,14 @@ class ChatState extends State<Chat> {
           .document(DateTime.now().millisecondsSinceEpoch.toString());
 
       Firestore.instance.runTransaction((transaction) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String picurl = prefs.getString('picurl');
         await transaction.set(
           documentReference,
           {
             'idFrom': email,
             'idTo': groupChatId,
+            'picurl': picurl,
             'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
             'content': content,
             'type': type
@@ -299,7 +286,7 @@ class ChatState extends State<Chat> {
                             height: 35.0,
                             padding: EdgeInsets.all(10.0),
                           ),
-                          imageUrl: peerAvatar,
+                          imageUrl: document['picurl'],
                           width: 35.0,
                           height: 35.0,
                           fit: BoxFit.cover,
@@ -446,6 +433,8 @@ class ChatState extends State<Chat> {
           .document(email)
           .updateData({'playwith': "null"});
       Navigator.pop(context);
+      UpdateFirebaseRoom.exitRoom(
+          tipe: tipe, email: email, namaRoom: namaRoom, roomEmail: roomEmail);
     }
 
     return Future.value(false);
@@ -453,8 +442,174 @@ class ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
-    var style2 =
-        TextStyle(color: Colors.grey[600], fontFamily: "MonsterratBold");
+    Future<bool> _onWillPop() {
+      return showDialog(
+            context: context,
+            builder: (context) => new AlertDialog(
+              title: new Text('Are you sure..?'),
+              content: new Text('Do you want to exit the room?  '),
+              actions: <Widget>[
+                new FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: new Text('No'),
+                ),
+                new FlatButton(
+                  onPressed: () {
+                    UpdateFirebaseRoom.exitRoom(
+                        tipe: tipe,
+                        email: email,
+                        namaRoom: namaRoom,
+                        roomEmail: roomEmail);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => App(
+                                  userRepository: userRepository,
+                                )));
+                  },
+                  child: new Text('Yes'),
+                ),
+              ],
+            ),
+          ) ??
+          false;
+    }
+
+    var style2 = TextStyle(
+        color: Colors.grey[600], fontFamily: "MonsterratBold", fontSize: 12.0);
+    return BlocBuilder<ChatroomBloc3, ChatroomState3>(
+        bloc: _chatroomBloc3,
+        builder: (context, state) {
+          if (state.isPlay) {
+            return OneScreen(
+              email: email,
+              namaRoom: namaRoom,
+              pertanyaan: listModelPertanyaan,
+              roomEmail: roomEmail,
+              tipe: tipe,
+              userRepository: userRepository,
+            );
+          } else {
+            {
+              return Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Scaffold(
+                      appBar: buildAppBar(state, _onWillPop),
+                      body: buildWillPopScope(style2)),
+                  state.isReady
+                      ? buildMaterialWait("Wait for opponent ready..")
+                      : Container(),
+                ],
+              );
+            }
+          }
+        });
+  }
+
+  StreamBuilder buildMaterialWait(String text) {
+    return StreamBuilder(
+        stream: Firestore.instance
+            .collection('$tipe')
+            .document('$roomEmail $namaRoom')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Material(
+              color: Colors.black87,
+              child: new InkWell(
+                onTap: () {},
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    new Container(
+                        child: Text(
+                      "Check your internet connection..",
+                      style: TextStyle(
+                          fontFamily: "MonsterratBold", color: Colors.white),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 30.0),
+                      child: RaisedButton(
+                        color: Colors.white,
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          _chatroomBloc3.dispatch(CancelClicked(
+                              email: email,
+                              namaRoom: namaRoom,
+                              roomEmail: roomEmail,
+                              tipe: tipe));
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          } else {
+            var userDocument = snapshot.data;
+            var _results = userDocument['isi_room'];
+            int x = 0;
+            for (var entry in _results.entries) {
+              x += entry.value;
+            }
+            if (tipe == "One On One" && x == 4) {
+              print(x);
+              print("asu");
+              _chatroomBloc3.dispatch(PlayOneOnOne(
+                  email: email,
+                  namaRoom: namaRoom,
+                  roomEmail: roomEmail,
+                  tipe: tipe));
+            }
+            return Material(
+              color: Colors.black87,
+              child: new InkWell(
+                onTap: () {},
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    new Container(
+                        child: Text(
+                      text,
+                      style: TextStyle(
+                          fontFamily: "MonsterratBold", color: Colors.white),
+                    )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 30.0),
+                      child: RaisedButton(
+                        color: Colors.white,
+                        child: Text("Cancel"),
+                        onPressed: () {
+                          _chatroomBloc3.dispatch(CancelClicked(
+                              email: email,
+                              namaRoom: namaRoom,
+                              roomEmail: roomEmail,
+                              tipe: tipe));
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
+        });
+  }
+
+  WillPopScope buildWillPopScope(TextStyle style2) {
     return WillPopScope(
       child: Stack(
         children: <Widget>[
@@ -480,10 +635,27 @@ class ChatState extends State<Chat> {
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
-                              "1 Online",
-                              style: style2,
-                            ),
+                            StreamBuilder(
+                                stream: Firestore.instance
+                                    .collection('room')
+                                    .document('$roomEmail $namaRoom')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return new Text("0 Online");
+                                  }
+                                  var userDocument = snapshot.data;
+                                  if (userDocument["user"] >= 2) {
+                                    _chatroomBloc3.dispatch(RoomFull());
+                                  } else {
+                                    _chatroomBloc3.dispatch(RoomNotFull());
+                                  }
+
+                                  return new Text(
+                                    "${userDocument["user"]} Online",
+                                    style: style2,
+                                  );
+                                }),
                           ],
                         ),
                         Row(
@@ -553,6 +725,77 @@ class ChatState extends State<Chat> {
         ],
       ),
       onWillPop: onBackPress,
+    );
+  }
+
+  AppBar buildAppBar(ChatroomState3 state, Future<bool> _onWillPop()) {
+    return AppBar(
+      actions: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: RaisedButton(
+            color: Colors.teal[300],
+            onPressed: () {
+              if (state.isFull) {
+                print("ready!");
+                _chatroomBloc3.dispatch(ReadyClicked(
+                    email: email,
+                    namaRoom: namaRoom,
+                    roomEmail: roomEmail,
+                    tipe: tipe));
+              } else {
+                Fluttertoast.showToast(
+                    msg: "Wait for other player before start the game.");
+              }
+            },
+            child: state.isFull
+                ? SizedBox(
+                    width: 100.0,
+                    child: Center(
+                      child: Text(
+                        "Ready",
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            fontFamily: "MonsterratBold",
+                            color: Colors.white),
+                      ),
+                    ),
+                  )
+                : SizedBox(
+                    width: 100.0,
+                    child: Center(
+                      child: FadeAnimatedTextKit(
+                          text: ["Wait", "For", "Other", "Player"],
+                          textStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32.0,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.start,
+                          alignment: AlignmentDirectional
+                              .topStart // or Alignment.topLeft
+                          ),
+                    )),
+
+            // : Text(
+            //     "Wait Other Player",
+            //     style: TextStyle(
+            //         fontFamily: "MonsterratBold",
+            //         color: Colors.white),
+            //   ),
+          ),
+        )
+      ],
+      title: Text(
+        "$namaRoom",
+        style: TextStyle(color: Colors.black, fontFamily: "MonsterratBold"),
+      ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.exit_to_app,
+          color: Colors.black,
+        ),
+        onPressed: _onWillPop,
+      ),
     );
   }
 

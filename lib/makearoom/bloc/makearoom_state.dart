@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -9,7 +8,7 @@ class MakeARoomState {
   final bool isFailure;
 
   final bool onPlay;
-  final String nama_room;
+  final String namaRoom;
   final String email;
   final String soal;
   final String matpel;
@@ -19,7 +18,7 @@ class MakeARoomState {
       @required this.isSuccess,
       @required this.isFailure,
       @required this.isGo,
-      this.nama_room,
+      this.namaRoom,
       this.email,
       this.onPlay,
       this.soal,
@@ -27,7 +26,7 @@ class MakeARoomState {
       this.bab});
   factory MakeARoomState.empty() {
     return MakeARoomState(
-        nama_room: "Aselole",
+        namaRoom: "Aselole",
         isSubmitting: false,
         isGo: false,
         isSuccess: false,
@@ -62,7 +61,7 @@ class MakeARoomState {
       {String email,
       String bab,
       String matpel,
-      String nama_room,
+      String namaRoom,
       String soal,
       bool isGo,
       bool isSubmitting,
@@ -70,7 +69,7 @@ class MakeARoomState {
       bool onPlay}) {
     return copyWith(
         email: email,
-        nama_room: nama_room,
+        namaRoom: namaRoom,
         onPlay: onPlay,
         isGo: isGo,
         isSubmitting: isSubmitting,
@@ -88,12 +87,12 @@ class MakeARoomState {
       bool isGo,
       bool isSuccess,
       bool isFailure,
-      String nama_room,
+      String namaRoom,
       String bab,
       String matpel,
       String soal}) {
     return MakeARoomState(
-        nama_room: nama_room ?? this.nama_room,
+        namaRoom: namaRoom ?? this.namaRoom,
         isGo: isGo ?? this.isGo,
         email: email ?? this.email,
         onPlay: onPlay ?? this.onPlay,

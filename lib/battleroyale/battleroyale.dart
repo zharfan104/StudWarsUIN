@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 
 class BattleRoyale extends StatelessWidget {
-  String _mapel = 'Kimia';
-  String _subBab = 'Kimia Unsur';
-  String _soal = 'Berapa massa atom helium ?';
-  int pMusuh = 222;
-  int pPlayer = 123;
-  String benar = '4';
-  String salah1 = '3';
-  String salah2 = '18';
-  String salah3 = '20';
+  final String _mapel = 'Kimia';
+  final String _subBab = 'Kimia Unsur';
+  final String _soal = 'Berapa massa atom helium ?';
+  final int pMusuh = 222;
+  final int pPlayer = 123;
+  final String benar = '4';
+  final String salah1 = '3';
+  final String salah2 = '18';
+  final String salah3 = '20';
   @override
   Widget build(BuildContext context) {
     return Scaffold(

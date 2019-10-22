@@ -23,12 +23,17 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   ) {
     final observableStream = events as Observable<RegisterEvent>;
     final nonDebounceStream = observableStream.where((event) {
-      return (event is! EmailChanged && event is! PasswordChanged);
+      return (event is! EmailChanged &&
+          event is! PasswordChanged &&
+          event is! UsernameChanged);
     });
     final debounceStream = observableStream.where((event) {
-      return (event is EmailChanged || event is PasswordChanged);
+      return (event is EmailChanged ||
+          event is PasswordChanged ||
+          event is UsernameChanged);
     }).debounceTime(Duration(milliseconds: 300));
-    return super.transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
+    return super
+        .transformEvents(nonDebounceStream.mergeWith([debounceStream]), next);
   }
 
   @override
@@ -39,8 +44,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield* _mapEmailChangedToState(event.email);
     } else if (event is PasswordChanged) {
       yield* _mapPasswordChangedToState(event.password);
+    } else if (event is UsernameChanged) {
+      yield* _mapUsernameChangedToState(event.username);
     } else if (event is Submitted) {
-      yield* _mapFormSubmittedToState(event.email, event.password);
+      yield* _mapFormSubmittedToState(
+          event.email, event.password, event.username);
     }
   }
 
@@ -56,16 +64,18 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     );
   }
 
+  Stream<RegisterState> _mapUsernameChangedToState(String username) async* {
+    yield currentState.update(
+      isUsernameValid: Validators.isValidPassword(username),
+    );
+  }
+
   Stream<RegisterState> _mapFormSubmittedToState(
-    String email,
-    String password,
-  ) async* {
+      String email, String password, String username) async* {
     yield RegisterState.loading();
     try {
       await _userRepository.signUp(
-        email: email,
-        password: password,
-      );
+          email: email, password: password, username: username);
       yield RegisterState.success();
     } catch (_) {
       yield RegisterState.failure();

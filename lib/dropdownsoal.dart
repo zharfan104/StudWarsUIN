@@ -61,6 +61,3 @@ var semuabab =
     [matematika, kimia, fisika, biologi].expand((x) => x).toSet().toList();
 
 const soal = <String>['SIMAK UI', 'SBMPTN', 'UM', 'Semua'];
-String _btnsoal = "Semua";
-
-const String _btnBabSelected = "Semua Bab";

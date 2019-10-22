@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_firebase_login/UpdateFirebaseRoom.dart';
 import 'package:flutter_firebase_login/chat_room/bloc/chatroom_bloc.dart';
 import 'package:flutter_firebase_login/chat_room/chat.dart';
 import 'package:flutter_firebase_login/main.dart';
@@ -13,15 +15,17 @@ class ChatroomScreen extends StatelessWidget {
   final String _matpel;
   final String _soal;
   final String _tipe;
-  final String _nama_room;
+  final String _namaRoom;
+  final int _user;
   final String _roomEmail;
   ChatroomScreen(
       {Key key,
       @required UserRepository userRepository,
       @required String email,
-      @required String bab,
+      @required int user,
       @required String roomEmail,
-      @required String nama_room,
+      @required String bab,
+      @required String namaRoom,
       @required String matpel,
       @required String tipe,
       @required String soal})
@@ -32,7 +36,8 @@ class ChatroomScreen extends StatelessWidget {
         _matpel = matpel,
         _tipe = tipe,
         _soal = soal,
-        _nama_room = nama_room,
+        _namaRoom = namaRoom,
+        _user = user,
         _roomEmail = roomEmail,
         super(key: key);
 
@@ -51,16 +56,11 @@ class ChatroomScreen extends StatelessWidget {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    Firestore.instance
-                        .collection('user')
-                        .document(_email)
-                        .updateData({'playwith': "null"});
-
-                    Firestore.instance
-                        .collection('room')
-                        .document('$_nama_room-$_roomEmail')
-                        .updateData({'user': FieldValue.increment(-1)});
-
+                    UpdateFirebaseRoom.exitRoom(
+                        tipe: _tipe,
+                        email: _email,
+                        namaRoom: _namaRoom,
+                        roomEmail: _roomEmail);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -79,48 +79,25 @@ class ChatroomScreen extends StatelessWidget {
     print(_email);
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: Scaffold(
-        appBar: AppBar(
-          actions: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: RaisedButton(
-                color: Colors.teal[300],
-                onPressed: () {},
-                child: Text(
-                  "Ready",
-                  style: TextStyle(fontFamily: "MonsterratBold"),
-                ),
-              ),
-            )
-          ],
-          title: Text(
-            "$_nama_room",
-            style: TextStyle(color: Colors.black, fontFamily: "MonsterratBold"),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.exit_to_app,
-              color: Colors.black,
+      child: BlocProvider<ChatroomBloc3>(
+        builder: (context) => ChatroomBloc3(
+            // userRepository: _userRepository,
+            // namaRoom: _namaRoom,
+            // roomEmail: _roomEmail,
             ),
-            onPressed: _onWillPop,
-          ),
-        ),
-        body: BlocProvider<ChatroomBloc>(
-          builder: (context) => ChatroomBloc(userRepository: _userRepository),
-          child: Chat(
-            roomEmail: _roomEmail,
-            userRepository: _userRepository,
-            tipe: _tipe,
-            nama_room: _nama_room,
-            bab: _bab,
-            email: _email,
-            matpel: _matpel,
-            soal: _soal,
-            peerAvatar:
-                "https://www.telegraph.co.uk/content/dam/men/2017/08/01/TELEMMGLPICT000135625787_trans_NvBQzQNjv4Bq2lilFKyV0mnRbDqhBKaO25ZHuHhHLN-rNkYJ4-8VlCg.jpeg",
-            peerId: "kucing@gmail.com",
-          ),
+        child: Chat(
+          user: _user,
+          roomEmail: _roomEmail,
+          userRepository: _userRepository,
+          tipe: _tipe,
+          namaRoom: _namaRoom,
+          bab: _bab,
+          email: _email,
+          matpel: _matpel,
+          soal: _soal,
+          peerAvatar:
+              "https://www.telegraph.co.uk/content/dam/men/2017/08/01/TELEMMGLPICT000135625787_trans_NvBQzQNjv4Bq2lilFKyV0mnRbDqhBKaO25ZHuHhHLN-rNkYJ4-8VlCg.jpeg",
+          peerId: "kucing@gmail.com",
         ),
       ),
     );

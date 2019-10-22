@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "235460979667",
-    "firebase_url": "https://flutterfirebaselogin-4206d.firebaseio.com",
-    "project_id": "flutterfirebaselogin-4206d",
-    "storage_bucket": "flutterfirebaselogin-4206d.appspot.com"
+    "project_number": "423276806498",
+    "firebase_url": "https://studwars-aec99.firebaseio.com",
+    "project_id": "studwars-aec99",
+    "storage_bucket": "studwars-aec99.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:235460979667:android:96fe95cd656341eba45d26",
+        "mobilesdk_app_id": "1:423276806498:android:a194c54ec0cb168460ec3b",
         "android_client_info": {
           "package_name": "com.example.flutterfirebaselogin"
         }
       },
       "oauth_client": [
         {
-          "client_id": "235460979667-hdd56uq1f4ac2sflvbsl20os7l2j8lq1.apps.googleusercontent.com",
+          "client_id": "423276806498-r6fnm74m9s7ff5cdo1f4e4mv2jko32fa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutterfirebaselogin",
+            "certificate_hash": "1f61fb94ded5f82708294974260aa2b19b7f8d96"
+          }
+        },
+        {
+          "client_id": "423276806498-n38j95hip3ojb3j3mjuqvua5pe57mslr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAvLXtvW-mMS6oCLE3pRKipP3xZVzuWfsA"
+          "current_key": "AIzaSyBtUC2YCo1LS9sDloATHwAlXIw03aFg7KE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "235460979667-hdd56uq1f4ac2sflvbsl20os7l2j8lq1.apps.googleusercontent.com",
+              "client_id": "423276806498-n38j95hip3ojb3j3mjuqvua5pe57mslr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
